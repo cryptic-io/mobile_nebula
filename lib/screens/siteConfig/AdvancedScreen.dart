@@ -28,10 +28,12 @@ class Advanced {
   String verbosity;
   List<UnsafeRoute> unsafeRoutes;
   int mtu;
+  bool logWrap;
 }
 
 class AdvancedScreen extends StatefulWidget {
-  const AdvancedScreen({Key key, this.site, @required this.onSave}) : super(key: key);
+  const AdvancedScreen({Key key, this.site, @required this.onSave})
+      : super(key: key);
 
   final Site site;
   final ValueChanged<Advanced> onSave;
@@ -52,6 +54,7 @@ class _AdvancedScreenState extends State<AdvancedScreen> {
     settings.verbosity = widget.site.logVerbosity;
     settings.unsafeRoutes = widget.site.unsafeRoutes;
     settings.mtu = widget.site.mtu;
+    settings.logWrap = widget.site.logWrap;
     super.initState();
   }
 
@@ -77,7 +80,9 @@ class _AdvancedScreenState extends State<AdvancedScreen> {
                     suffix: Text("seconds"),
                     textAlign: TextAlign.right,
                     maxLength: 5,
-                    inputFormatters: [WhitelistingTextInputFormatter.digitsOnly],
+                    inputFormatters: [
+                      WhitelistingTextInputFormatter.digitsOnly
+                    ],
                     onSaved: (val) {
                       setState(() {
                         settings.lhDuration = int.parse(val);
@@ -93,7 +98,9 @@ class _AdvancedScreenState extends State<AdvancedScreen> {
                     keyboardType: TextInputType.number,
                     textAlign: TextAlign.right,
                     maxLength: 5,
-                    inputFormatters: [WhitelistingTextInputFormatter.digitsOnly],
+                    inputFormatters: [
+                      WhitelistingTextInputFormatter.digitsOnly
+                    ],
                     onSaved: (val) {
                       setState(() {
                         settings.port = int.parse(val);
@@ -108,7 +115,9 @@ class _AdvancedScreenState extends State<AdvancedScreen> {
                     keyboardType: TextInputType.number,
                     textAlign: TextAlign.right,
                     maxLength: 5,
-                    inputFormatters: [WhitelistingTextInputFormatter.digitsOnly],
+                    inputFormatters: [
+                      WhitelistingTextInputFormatter.digitsOnly
+                    ],
                     onSaved: (val) {
                       setState(() {
                         settings.mtu = int.parse(val);
@@ -131,6 +140,22 @@ class _AdvancedScreenState extends State<AdvancedScreen> {
                           });
                     });
                   }),
+              ConfigItem(
+                label: Text('Wrap log output'),
+                labelWidth: 200,
+                content: Align(
+                    alignment: Alignment.centerRight,
+                    child: Switch.adaptive(
+                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      value: settings.logWrap,
+                      onChanged: (value) {
+                        setState(() {
+                          settings.logWrap = value;
+                          changed = true;
+                        });
+                      },
+                    )),
+              ),
               ConfigPageItem(
                   label: Text('Log verbosity'),
                   labelWidth: 150,
@@ -148,19 +173,23 @@ class _AdvancedScreenState extends State<AdvancedScreen> {
                     });
                   }),
               ConfigPageItem(
-                  label: Text('Unsafe routes'),
-                  labelWidth: 150,
-                  content: Text(Utils.itemCountFormat(settings.unsafeRoutes.length), textAlign: TextAlign.end),
-                  onPressed: () {
-                    Utils.openPage(context, (context) {
-                      return UnsafeRoutesScreen(unsafeRoutes: settings.unsafeRoutes, onSave: (routes) {
-                        setState(() {
-                          settings.unsafeRoutes = routes;
-                          changed = true;
+                label: Text('Unsafe routes'),
+                labelWidth: 150,
+                content: Text(
+                    Utils.itemCountFormat(settings.unsafeRoutes.length),
+                    textAlign: TextAlign.end),
+                onPressed: () {
+                  Utils.openPage(context, (context) {
+                    return UnsafeRoutesScreen(
+                        unsafeRoutes: settings.unsafeRoutes,
+                        onSave: (routes) {
+                          setState(() {
+                            settings.unsafeRoutes = routes;
+                            changed = true;
+                          });
                         });
-                      });
-                    });
-                  },
+                  });
+                },
               )
             ],
           ),
@@ -172,10 +201,12 @@ class _AdvancedScreenState extends State<AdvancedScreen> {
                   try {
                     var config = await widget.site.renderConfig();
                     Utils.openPage(context, (context) {
-                      return RenderedConfigScreen(config: config, name: widget.site.name);
+                      return RenderedConfigScreen(
+                          config: config, name: widget.site.name);
                     });
                   } catch (err) {
-                    Utils.popError(context, 'Failed to render the site config', err);
+                    Utils.popError(
+                        context, 'Failed to render the site config', err);
                   }
                 },
               )

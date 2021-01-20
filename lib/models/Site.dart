@@ -11,7 +11,8 @@ import 'StaticHosts.dart';
 var uuid = Uuid();
 
 class Site {
-  static const platform = MethodChannel('net.defined.mobileNebula/NebulaVpnService');
+  static const platform =
+      MethodChannel('net.defined.mobileNebula/NebulaVpnService');
   EventChannel _updates;
 
   /// Signals that something about this site has changed. onError is called with an error string if there was an error
@@ -43,6 +44,7 @@ class Site {
   String status;
   String logFile;
   String logVerbosity;
+  bool logWrap;
 
   // A list of errors encountered while loading the site
   List<String> errors;
@@ -62,6 +64,7 @@ class Site {
       this.status,
       this.logFile,
       this.logVerbosity = 'info',
+      this.logWrap,
       errors,
       unsafeRoutes})
       : staticHostmap = staticHostmap ?? {},
@@ -105,6 +108,7 @@ class Site {
     sortKey = json['sortKey'];
     logFile = json['logFile'];
     logVerbosity = json['logVerbosity'];
+    logWrap = json['logWrap'];
     connected = json['connected'] ?? false;
     status = json['status'] ?? "";
 
@@ -154,6 +158,7 @@ class Site {
       'cipher': cipher,
       'sortKey': sortKey,
       'logVerbosity': logVerbosity,
+      'logWrap': logWrap,
     };
   }
 
@@ -205,7 +210,8 @@ class Site {
 
   Future<List<HostInfo>> listHostmap() async {
     try {
-      var ret = await platform.invokeMethod("active.listHostmap", <String, String>{"id": id});
+      var ret = await platform
+          .invokeMethod("active.listHostmap", <String, String>{"id": id});
       if (ret == null) {
         return [];
       }
@@ -217,7 +223,6 @@ class Site {
       });
 
       return hosts;
-
     } on PlatformException catch (err) {
       //TODO: fix this message
       throw err.details ?? err.message ?? err.toString();
@@ -228,7 +233,8 @@ class Site {
 
   Future<List<HostInfo>> listPendingHostmap() async {
     try {
-      var ret = await platform.invokeMethod("active.listPendingHostmap", <String, String>{"id": id});
+      var ret = await platform.invokeMethod(
+          "active.listPendingHostmap", <String, String>{"id": id});
       if (ret == null) {
         return [];
       }
@@ -240,7 +246,6 @@ class Site {
       });
 
       return hosts;
-
     } on PlatformException catch (err) {
       throw err.details ?? err.message ?? err.toString();
     } catch (err) {
@@ -250,9 +255,9 @@ class Site {
 
   Future<Map<String, List<HostInfo>>> listAllHostmaps() async {
     try {
-      var res = await Future.wait([this.listHostmap(), this.listPendingHostmap()]);
+      var res =
+          await Future.wait([this.listHostmap(), this.listPendingHostmap()]);
       return {"active": res[0], "pending": res[1]};
-
     } on PlatformException catch (err) {
       throw err.details ?? err.message ?? err.toString();
     } catch (err) {
@@ -266,14 +271,14 @@ class Site {
 
   Future<HostInfo> getHostInfo(String vpnIp, bool pending) async {
     try {
-      var ret = await platform.invokeMethod("active.getHostInfo", <String, dynamic>{"id": id, "vpnIp": vpnIp, "pending": pending});
+      var ret = await platform.invokeMethod("active.getHostInfo",
+          <String, dynamic>{"id": id, "vpnIp": vpnIp, "pending": pending});
       final h = jsonDecode(ret);
       if (h == null) {
         return null;
       }
 
       return HostInfo.fromJson(h);
-
     } on PlatformException catch (err) {
       throw err.details ?? err.message ?? err.toString();
     } catch (err) {
@@ -283,14 +288,14 @@ class Site {
 
   Future<HostInfo> setRemoteForTunnel(String vpnIp, String addr) async {
     try {
-      var ret = await platform.invokeMethod("active.setRemoteForTunnel", <String, dynamic>{"id": id, "vpnIp": vpnIp, "addr": addr});
+      var ret = await platform.invokeMethod("active.setRemoteForTunnel",
+          <String, dynamic>{"id": id, "vpnIp": vpnIp, "addr": addr});
       final h = jsonDecode(ret);
       if (h == null) {
         return null;
       }
 
       return HostInfo.fromJson(h);
-
     } on PlatformException catch (err) {
       throw err.details ?? err.message ?? err.toString();
     } catch (err) {
@@ -300,8 +305,8 @@ class Site {
 
   Future<bool> closeTunnel(String vpnIp) async {
     try {
-      return await platform.invokeMethod("active.closeTunnel", <String, dynamic>{"id": id, "vpnIp": vpnIp});
-
+      return await platform.invokeMethod(
+          "active.closeTunnel", <String, dynamic>{"id": id, "vpnIp": vpnIp});
     } on PlatformException catch (err) {
       throw err.details ?? err.message ?? err.toString();
     } catch (err) {

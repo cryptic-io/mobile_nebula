@@ -7,6 +7,7 @@ import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:mobile_nebula/components/SimplePage.dart';
 import 'package:mobile_nebula/components/SpecialSelectableText.dart';
 import 'package:mobile_nebula/models/Site.dart';
+import 'package:mobile_nebula/services/settings.dart';
 import 'package:mobile_nebula/services/share.dart';
 import 'package:mobile_nebula/services/utils.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -23,8 +24,10 @@ class SiteLogsScreen extends StatefulWidget {
 class _SiteLogsScreenState extends State<SiteLogsScreen> {
   String logs = '';
   ScrollController controller = ScrollController();
-  RefreshController refreshController = RefreshController(initialRefresh: false);
+  RefreshController refreshController =
+      RefreshController(initialRefresh: false);
 
+  var settings = Settings();
   @override
   void initState() {
     loadLogs();
@@ -54,8 +57,9 @@ class _SiteLogsScreenState extends State<SiteLogsScreen> {
       refreshController: refreshController,
       child: Container(
           padding: EdgeInsets.all(5),
-          constraints: BoxConstraints(minWidth: MediaQuery.of(context).size.width),
-          child: SpecialSelectableText(logs.trim(), style: TextStyle(fontFamily: 'RobotoMono', fontSize: 14))),
+          constraints: logBoxConstraints(context),
+          child: SpecialSelectableText(logs.trim(),
+              style: TextStyle(fontFamily: 'RobotoMono', fontSize: 14))),
       bottomBar: _buildBottomBar(),
     );
   }
@@ -67,27 +71,37 @@ class _SiteLogsScreenState extends State<SiteLogsScreen> {
       width: 0.0,
     );
 
-    var padding = Platform.isAndroid ? EdgeInsets.fromLTRB(0, 20, 0, 30) : EdgeInsets.all(10);
+    var padding = Platform.isAndroid
+        ? EdgeInsets.fromLTRB(0, 20, 0, 30)
+        : EdgeInsets.all(10);
 
     return Container(
         decoration: BoxDecoration(
           border: Border(top: borderSide),
         ),
-        child: Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
+        child:
+            Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
           Expanded(
               child: PlatformIconButton(
             padding: padding,
             icon: Icon(context.platformIcons.share, size: 30),
             onPressed: () {
-              Share.shareFile(title: '${widget.site.name} logs', filePath: widget.site.logFile, filename: '${widget.site.name}.log');
+              Share.shareFile(
+                  title: '${widget.site.name} logs',
+                  filePath: widget.site.logFile,
+                  filename: '${widget.site.name}.log');
             },
           )),
           Expanded(
               child: PlatformIconButton(
             padding: padding,
-            icon: Icon(context.platformIcons.delete, size: Platform.isIOS ? 38 : 30),
+            icon: Icon(context.platformIcons.delete,
+                size: Platform.isIOS ? 38 : 30),
             onPressed: () {
-              Utils.confirmDelete(context, 'Are you sure you want to clear all logs?', () => deleteLogs());
+              Utils.confirmDelete(
+                  context,
+                  'Are you sure you want to clear all logs?',
+                  () => deleteLogs());
             },
           )),
           Expanded(
@@ -96,7 +110,8 @@ class _SiteLogsScreenState extends State<SiteLogsScreen> {
             icon: Icon(context.platformIcons.downArrow, size: 30),
             onPressed: () async {
               controller.animateTo(controller.position.maxScrollExtent,
-                  duration: const Duration(milliseconds: 500), curve: Curves.linearToEaseOut);
+                  duration: const Duration(milliseconds: 500),
+                  curve: Curves.linearToEaseOut);
             },
           )),
         ]));
@@ -119,5 +134,13 @@ class _SiteLogsScreenState extends State<SiteLogsScreen> {
     var file = File(widget.site.logFile);
     await file.writeAsBytes([]);
     await loadLogs();
+  }
+
+  logBoxConstraints(BuildContext context) {
+    if (widget.site.logWrap) {
+      return BoxConstraints(maxWidth: MediaQuery.of(context).size.width);
+    } else {
+      return BoxConstraints(minWidth: MediaQuery.of(context).size.width);
+    }
   }
 }

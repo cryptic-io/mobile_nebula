@@ -62,7 +62,8 @@ class _SiteConfigScreenState extends State<SiteConfigScreen> {
           try {
             await site.save();
           } catch (error) {
-            return Utils.popError(context, 'Failed to save the site configuration', error.toString());
+            return Utils.popError(context,
+                'Failed to save the site configuration', error.toString());
           }
 
           Navigator.pop(context);
@@ -90,7 +91,9 @@ class _SiteConfigScreenState extends State<SiteConfigScreen> {
       data = err.toString();
     }
 
-    return ConfigSection(label: 'DEBUG', children: [ConfigItem(labelWidth: 0, content: SpecialSelectableText(data))]);
+    return ConfigSection(label: 'DEBUG', children: [
+      ConfigItem(labelWidth: 0, content: SpecialSelectableText(data))
+    ]);
   }
 
   Widget _main() {
@@ -120,14 +123,22 @@ class _SiteConfigScreenState extends State<SiteConfigScreen> {
       children: [
         ConfigPageItem(
           label: Text('Certificate'),
-          content: Wrap(alignment: WrapAlignment.end, crossAxisAlignment: WrapCrossAlignment.center, children: <Widget>[
-            certError
-                ? Padding(
-                    child: Icon(Icons.error, color: CupertinoColors.systemRed.resolveFrom(context), size: 20),
-                    padding: EdgeInsets.only(right: 5))
-                : Container(),
-            certError ? Text('Needs attention') : Text(site.cert.cert.details.name)
-          ]),
+          content: Wrap(
+              alignment: WrapAlignment.end,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              children: <Widget>[
+                certError
+                    ? Padding(
+                        child: Icon(Icons.error,
+                            color:
+                                CupertinoColors.systemRed.resolveFrom(context),
+                            size: 20),
+                        padding: EdgeInsets.only(right: 5))
+                    : Container(),
+                certError
+                    ? Text('Needs attention')
+                    : Text(site.cert.cert.details.name)
+              ]),
           onPressed: () {
             Utils.openPage(context, (context) {
               return CertificateScreen(
@@ -144,15 +155,22 @@ class _SiteConfigScreenState extends State<SiteConfigScreen> {
         ),
         ConfigPageItem(
             label: Text("CA"),
-            content:
-                Wrap(alignment: WrapAlignment.end, crossAxisAlignment: WrapCrossAlignment.center, children: <Widget>[
-              caError
-                  ? Padding(
-                      child: Icon(Icons.error, color: CupertinoColors.systemRed.resolveFrom(context), size: 20),
-                      padding: EdgeInsets.only(right: 5))
-                  : Container(),
-              caError ? Text('Needs attention') : Text(Utils.itemCountFormat(site.ca.length))
-            ]),
+            content: Wrap(
+                alignment: WrapAlignment.end,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                children: <Widget>[
+                  caError
+                      ? Padding(
+                          child: Icon(Icons.error,
+                              color: CupertinoColors.systemRed
+                                  .resolveFrom(context),
+                              size: 20),
+                          padding: EdgeInsets.only(right: 5))
+                      : Container(),
+                  caError
+                      ? Text('Needs attention')
+                      : Text(Utils.itemCountFormat(site.ca.length))
+                ]),
             onPressed: () {
               Utils.openPage(context, (context) {
                 return CAListScreen(
@@ -175,16 +193,22 @@ class _SiteConfigScreenState extends State<SiteConfigScreen> {
       children: <Widget>[
         ConfigPageItem(
           label: Text('Hosts'),
-          content: Wrap(alignment: WrapAlignment.end, crossAxisAlignment: WrapCrossAlignment.center, children: <Widget>[
-            site.staticHostmap.length == 0
-                ? Padding(
-                    child: Icon(Icons.error, color: CupertinoColors.systemRed.resolveFrom(context), size: 20),
-                    padding: EdgeInsets.only(right: 5))
-                : Container(),
-            site.staticHostmap.length == 0
-                ? Text('Needs attention')
-                : Text(Utils.itemCountFormat(site.staticHostmap.length))
-          ]),
+          content: Wrap(
+              alignment: WrapAlignment.end,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              children: <Widget>[
+                site.staticHostmap.length == 0
+                    ? Padding(
+                        child: Icon(Icons.error,
+                            color:
+                                CupertinoColors.systemRed.resolveFrom(context),
+                            size: 20),
+                        padding: EdgeInsets.only(right: 5))
+                    : Container(),
+                site.staticHostmap.length == 0
+                    ? Text('Needs attention')
+                    : Text(Utils.itemCountFormat(site.staticHostmap.length))
+              ]),
           onPressed: () {
             Utils.openPage(context, (context) {
               return StaticHostsScreen(
@@ -218,6 +242,7 @@ class _SiteConfigScreenState extends State<SiteConfigScreen> {
                         site.lhDuration = settings.lhDuration;
                         site.port = settings.port;
                         site.logVerbosity = settings.verbosity;
+                        site.logWrap = settings.logWrap;
                         site.unsafeRoutes = settings.unsafeRoutes;
                         site.mtu = settings.mtu;
                       });

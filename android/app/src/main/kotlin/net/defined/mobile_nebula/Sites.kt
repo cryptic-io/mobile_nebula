@@ -142,6 +142,7 @@ class Site {
     val cipher: String
     val sortKey: Int
     var logVerbosity: String
+    var logWrap: Boolean?
     var connected: Boolean?
     var status: String?
     val logFile: String?
@@ -172,6 +173,7 @@ class Site {
         sortKey = incomingSite.sortKey ?: 0
         logFile = siteDir.resolve("log").absolutePath
         logVerbosity = incomingSite.logVerbosity ?: "info"
+        logWrap = incomingSite.logWrap ?: false
 
         connected = false
         status = "Disconnected"
@@ -251,6 +253,7 @@ class IncomingSite(
     val cipher: String,
     val sortKey: Int?,
     var logVerbosity: String?,
+    val logWrap: Boolean?,
     @Expose(serialize = false)
     var key: String?
 ) {
